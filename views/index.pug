@@ -1,0 +1,16 @@
+doctype html
+html
+  head
+    title= title
+  body
+    h1= message
+    p Welcome to the homepage of our app!
+    a(href="/about") About Us
+
+    h2 Featured Listings
+    ul
+      each listing in listings
+        li
+          h3= listing.name
+          p= listing.summary
+          a(href=listing.listing_url) View Listing
