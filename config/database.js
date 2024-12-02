@@ -8,8 +8,6 @@ dotenv.config();
 const mongoURI =
   process.env.MONGODB_URI || "mongodb://localhost:27017/defaultDatabase";
 
-console.log(mongoURI);
-
 // Mongoose connection function
 const connectDB = async () => {
   try {
