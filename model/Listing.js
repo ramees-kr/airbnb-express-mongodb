@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const ListingSchema = new mongoose.Schema(
   {
-    _id: { type: String, required: true }, // Use String for _id to match the example
+    _id: { type: String, required: true },
     listing_url: { type: String, required: true },
     name: { type: String, required: true },
     summary: { type: String },
@@ -36,19 +36,19 @@ const ListingSchema = new mongoose.Schema(
     extra_people: { type: Number },
     guests_included: { type: Number },
     images: {
-      type: Object, // Adjust schema if you know the image structure
+      type: Object,
     },
     host: {
-      type: Object, // Adjust schema if you know the host structure
+      type: Object,
     },
     address: {
-      type: Object, // Adjust schema if you know the address structure
+      type: Object,
     },
     availability: {
-      type: Object, // Adjust schema if you know the availability structure
+      type: Object,
     },
     review_scores: {
-      type: Object, // Adjust schema if you know the review scores structure
+      type: Object,
     },
     reviews: {
       type: [Object], // Array of review objects
