@@ -4,20 +4,30 @@ const connectDB = require("./config/database");
 
 const app = express();
 
+app.use(express.static(path.join(__dirname, "public")));
+
 const Listing = require("./model/Listing");
 
-// Set Pug as the templating engine
-app.set("view engine", "pug");
-app.set("views", path.join(__dirname, "views"));
+const handlebars = require("express-handlebars");
+// Sets our app to use the handlebars engine
+app.set("view engine", "handlebars");
+// Sets handlebars configurations with absolute paths
+app.engine(
+  "handlebars",
+  handlebars.engine({
+    layoutsDir: path.join(__dirname, "views", "layouts"), // Absolute path for layouts directory
+    allowProtoPropertiesByDefault: true, // Allow proto properties
+    allowProtoMethodsByDefault: true, // Allow proto methods
+  })
+);
 
 connectDB();
 // Routes
 app.get("/", async (req, res) => {
   try {
     // Fetch the first 5 listings
-    const listings = await Listing.find().limit(5);
+    const listings = await Listing.find().lean().limit(5);
 
-    console.log(listings);
     res.render("index", {
       title: "Home Page",
       message: "Welcome to the Airbnb Clone!",
