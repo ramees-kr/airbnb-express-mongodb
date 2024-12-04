@@ -43,7 +43,8 @@ app.get("/", async (req, res) => {
 app.get("/viewListings", async (req, res) => {
   try {
     // Fetch all listings
-    const listings = await Listing.find().lean();
+    const listings = await Listing.find().lean().limit(18);
+    //limit number of results to improve performance
 
     res.render("viewListings", {
       title: "View Listings",
