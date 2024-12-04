@@ -71,6 +71,30 @@ router.post("/listings", async (req, res) => {
   }
 });
 
+// Route to update an existing listing
+router.put("/listings/:id", async (req, res) => {
+  try {
+    const updatedListing = await Listing.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true, // to return the updated document
+        runValidators: true, // Ensure validation is applied, need to change with express-validator later
+      }
+    );
+    if (!updatedListing) {
+      return res.status(404).json({ message: "Listing not found" });
+    }
+    res.json({
+      message: "Listing updated successfully",
+      listing: updatedListing,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating listing", error });
+  }
+});
+
 app.get("/about", (req, res) => {
   res.render("about", {
     title: "About Us",
