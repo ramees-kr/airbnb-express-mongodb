@@ -39,6 +39,22 @@ app.get("/", async (req, res) => {
   }
 });
 
+//route to view all listings viewListings
+app.get("/viewListings", async (req, res) => {
+  try {
+    // Fetch all listings
+    const listings = await Listing.find().lean();
+
+    res.render("viewListings", {
+      title: "View Listings",
+      listings,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred while fetching listings.");
+  }
+});
+
 app.get("/about", (req, res) => {
   res.render("about", {
     title: "About Us",
