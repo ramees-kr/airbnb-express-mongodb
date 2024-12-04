@@ -40,7 +40,7 @@ app.get("/", async (req, res) => {
 });
 
 //route to view all listings viewListings
-app.get("/viewListings", async (req, res) => {
+app.get("/listings", async (req, res) => {
   try {
     // Fetch all listings
     const listings = await Listing.find().lean().limit(18);
@@ -53,6 +53,21 @@ app.get("/viewListings", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("An error occurred while fetching listings.");
+  }
+});
+
+//Route to create a new listing
+router.post("/listings", async (req, res) => {
+  try {
+    const newListing = new Listing(req.body);
+    // Assuming the body contains all required fields, have to add validations here based on the form design with final fields chosen
+    await newListing.save();
+    res
+      .status(201)
+      .json({ message: "Listing created successfully", listing: newListing });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error creating listing", error });
   }
 });
 
