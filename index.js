@@ -1,13 +1,33 @@
 const express = require("express");
 const path = require("path");
 const connectDB = require("./config/database");
+const passport = require("passport");
+const session = require("express-session");
 
 const app = express();
 
+// Middleware
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+// Passport configuration
+require("./config/Passport")(passport);
+
+app.use(
+  session({
+    secret: "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 const Listing = require("./model/Listing");
-
+const User = require("./model/User");
+const authMiddleware = require("./middleware/auth");
 const handlebars = require("express-handlebars");
 // Sets our app to use the handlebars engine
 app.set("view engine", "handlebars");
@@ -23,7 +43,7 @@ app.engine(
 
 connectDB();
 // Routes
-app.get("/", async (req, res) => {
+app.get("/", authMiddleware, async (req, res) => {
   try {
     // Fetch the first 5 listings
     const listings = await Listing.find().lean().limit(5);
@@ -40,7 +60,7 @@ app.get("/", async (req, res) => {
 });
 
 //route to view all listings viewListings
-app.get("/listings", async (req, res) => {
+app.get("/listings", authMiddleware, async (req, res) => {
   try {
     // Fetch all listings
     const listings = await Listing.find().lean().limit(18);
@@ -57,7 +77,7 @@ app.get("/listings", async (req, res) => {
 });
 
 //Route to create a new listing
-router.post("/listings", async (req, res) => {
+app.post("/listings", authMiddleware, async (req, res) => {
   try {
     const newListing = new Listing(req.body);
     // Assuming the body contains all required fields, have to add validations here based on the form design with final fields chosen
@@ -72,7 +92,7 @@ router.post("/listings", async (req, res) => {
 });
 
 // Route to update an existing listing
-router.put("/listings/:id", async (req, res) => {
+app.put("/listings/:id", authMiddleware, async (req, res) => {
   try {
     const updatedListing = await Listing.findByIdAndUpdate(
       req.params.id,
@@ -96,7 +116,7 @@ router.put("/listings/:id", async (req, res) => {
 });
 
 // Route to delete a listing
-router.delete("/listings/:id", async (req, res) => {
+app.delete("/listings/:id", authMiddleware, async (req, res) => {
   try {
     const deletedListing = await Listing.findByIdAndDelete(req.params.id);
     if (!deletedListing) {
@@ -116,6 +136,56 @@ app.get("/about", (req, res) => {
   res.render("about", {
     title: "About Us",
     message: "Simple airbnb app.",
+  });
+});
+
+// Register Route
+app.get("/register", (req, res) => {
+  res.render("register", { title: "Register" });
+});
+
+app.post("/register", async (req, res) => {
+  const { username, email, password, password2 } = req.body;
+  if (password !== password2) {
+    return res.render("register", { error: "Passwords do not match!" });
+  }
+
+  try {
+    const user = new User({ username, email, password });
+    await user.save();
+    res.redirect("/login");
+  } catch (error) {
+    res.render("register", { error: "Error registering user!" });
+  }
+});
+
+// Login Route
+app.get("/login", (req, res) => {
+  const error = req.query.error; // Get error from query string
+  res.render("login", {
+    title: "Login",
+    error, // Pass error message to the template
+  });
+});
+
+app.post("/login", (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) return next(err);
+    if (!user) {
+      // Pass the error message in the query string
+      return res.redirect(`/login?error=${info.message}`);
+    }
+    req.logIn(user, (err) => {
+      if (err) return next(err);
+      return res.redirect("/");
+    });
+  })(req, res, next);
+});
+
+// Logout Route
+app.get("/logout", (req, res) => {
+  req.logout((err) => {
+    res.redirect("/");
   });
 });
 
