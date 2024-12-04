@@ -95,6 +95,23 @@ router.put("/listings/:id", async (req, res) => {
   }
 });
 
+// Route to delete a listing
+router.delete("/listings/:id", async (req, res) => {
+  try {
+    const deletedListing = await Listing.findByIdAndDelete(req.params.id);
+    if (!deletedListing) {
+      return res.status(404).json({ message: "Listing not found" });
+    }
+    res.json({
+      message: "Listing deleted successfully",
+      listing: deletedListing,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error deleting listing", error });
+  }
+});
+
 app.get("/about", (req, res) => {
   res.render("about", {
     title: "About Us",
