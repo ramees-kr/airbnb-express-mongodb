@@ -57,7 +57,7 @@ app.get("/listings", async (req, res) => {
 });
 
 //Route to create a new listing
-router.post("/listings", async (req, res) => {
+app.post("/listings", async (req, res) => {
   try {
     const newListing = new Listing(req.body);
     // Assuming the body contains all required fields, have to add validations here based on the form design with final fields chosen
@@ -72,7 +72,7 @@ router.post("/listings", async (req, res) => {
 });
 
 // Route to update an existing listing
-router.put("/listings/:id", async (req, res) => {
+app.put("/listings/:id", async (req, res) => {
   try {
     const updatedListing = await Listing.findByIdAndUpdate(
       req.params.id,
@@ -96,7 +96,7 @@ router.put("/listings/:id", async (req, res) => {
 });
 
 // Route to delete a listing
-router.delete("/listings/:id", async (req, res) => {
+app.delete("/listings/:id", async (req, res) => {
   try {
     const deletedListing = await Listing.findByIdAndDelete(req.params.id);
     if (!deletedListing) {
