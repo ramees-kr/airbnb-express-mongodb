@@ -29,6 +29,9 @@ const Listing = require("./model/Listing");
 const User = require("./model/User");
 const authMiddleware = require("./middleware/auth");
 const handlebars = require("express-handlebars");
+
+// Set the views directory
+app.set("views", path.join(__dirname, "views"));
 // Sets our app to use the handlebars engine
 app.set("view engine", "handlebars");
 // Sets handlebars configurations with absolute paths
