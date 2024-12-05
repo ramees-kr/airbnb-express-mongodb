@@ -1,6 +1,6 @@
 const express = require("express");
 const path = require("path");
-const connectDB = require("./config/database");
+const connectDB = require(path.join(__dirname, "config", "database"));
 const passport = require("passport");
 const session = require("express-session");
 
@@ -25,9 +25,9 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-const Listing = require("./model/Listing");
-const User = require("./model/User");
-const authMiddleware = require("./middleware/auth");
+const Listing = require(path.join(__dirname, "model", "Listing"));
+const User = require(path.join(__dirname, "model", "User"));
+const authMiddleware = require(path.join(__dirname, "middleware", "auth"));
 const handlebars = require("express-handlebars");
 
 // Set the views directory
