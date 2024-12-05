@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Passport configuration
-require("./config/Passport")(passport);
+require(path.join(__dirname, "config", "Passport"))(passport);
 
 app.use(
   session({
