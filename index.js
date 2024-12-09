@@ -80,9 +80,10 @@ app.get("/listings", authMiddleware, async (req, res) => {
 });
 
 //Route to create a new listing
-app.post("/listings", authMiddleware, async (req, res) => {
+app.post("/listings", async (req, res) => {
   try {
     const newListing = new Listing(req.body);
+
     // Assuming the body contains all required fields, have to add validations here based on the form design with final fields chosen
     await newListing.save();
     res
@@ -94,6 +95,9 @@ app.post("/listings", authMiddleware, async (req, res) => {
   }
 });
 
+app.get("/listing/add", authMiddleware, async (req, res) => {
+  res.render("add");
+});
 // Route to update an existing listing
 app.put("/listings/:id", authMiddleware, async (req, res) => {
   try {
@@ -192,6 +196,39 @@ app.get("/logout", (req, res) => {
   });
 });
 
+app.get("/allListings", async (req, res) => {
+  try {
+    res.render("pagination", {
+      title: "View Listings",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred while loading the page.");
+  }
+});
+
+app.get("/Listings/data", async (req, res) => {
+  try {
+    // Set pagination parameters
+    const limit = parseInt(req.query.length) || 10; // Items per page
+    const skip = parseInt(req.query.start) || 0; // Skip value
+
+    // Fetch listings with pagination
+    const listings = await Listing.find().skip(skip).limit(limit).lean();
+
+    // Send the response in DataTables format
+    const totalRecords = await Listing.countDocuments(); // Total records for pagination
+    res.json({
+      draw: parseInt(req.query.draw),
+      recordsTotal: totalRecords,
+      recordsFiltered: totalRecords,
+      data: listings,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred while fetching listings.");
+  }
+});
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

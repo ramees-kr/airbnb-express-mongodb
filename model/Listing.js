@@ -2,8 +2,7 @@ const mongoose = require("mongoose");
 
 const ListingSchema = new mongoose.Schema(
   {
-    _id: { type: String, required: true },
-    listing_url: { type: String, required: true },
+    listing_url: { type: String },
     name: { type: String, required: true },
     summary: { type: String },
     space: { type: String },
